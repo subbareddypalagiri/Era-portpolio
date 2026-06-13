@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SubbaReddy Pallagiri — Portfolio</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100vw;height:100vh;overflow:hidden;background:#000;color:#fff;font-family:"Space Grotesk",sans-serif;}
+
+#video-wrap{position:fixed;inset:0;z-index:0;}
+#vid{width:100%;height:100%;object-fit:cover;}
+#vignette{position:fixed;inset:0;z-index:1;background:radial-gradient(ellipse at center,transparent 25%,rgba(0,0,0,0.62) 100%);pointer-events:none;}
+#sc{position:fixed;inset:0;pointer-events:none;z-index:2;}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:200;}
+
+#top-nav{
+  position:fixed;top:28px;left:50%;transform:translateX(-50%);z-index:100;
+  display:flex;gap:18px;background:rgba(0,0,0,0.38);padding:11px 26px;
+  border-radius:999px;backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.09);
+  align-items:center;
+}
+.nav-dot{width:8px;height:8px;background:rgba(255,255,255,0.22);border-radius:50%;cursor:pointer;transition:all .3s;position:relative;}
+.nav-dot:hover,.nav-dot.active{background:#a78bfa;transform:scale(1.5);box-shadow:0 0 10px #a78bfa;}
+.nav-dot::after{content:attr(data-label);position:absolute;top:20px;left:50%;transform:translateX(-50%);font-size:10px;font-family:"Space Mono",monospace;opacity:0;transition:.3s;white-space:nowrap;color:#fff;}
+.nav-dot:hover::after{opacity:1;}
+
+#cosmic-quotes{
+  position:fixed;bottom:85px;left:50%;transform:translateX(-50%);z-index:15;
+  font-family:"Space Mono",monospace;font-size:12px;color:rgba(167,139,250,0.8);
+  letter-spacing:1px;text-align:center;pointer-events:none;
+  background:rgba(0,0,0,0.4);padding:8px 18px;border-radius:999px;
+  border:1px solid rgba(167,139,250,0.2);backdrop-filter:blur(10px);
+  transition:opacity 0.5s ease;
+}
+
+#labels{position:fixed;inset:0;z-index:10;pointer-events:none;}
+.lbl{position:absolute;pointer-events:none;opacity:0;display:flex;flex-direction:column;align-items:center;gap:6px;transition:opacity .6s ease;cursor:pointer;}
+.lbl.visible{opacity:1;pointer-events:all;}
+.lbl:hover .pill{background:rgba(167,139,250,0.22);border-color:rgba(167,139,250,0.8);transform:scale(1.07);}
+.dot-ring{width:10px;height:10px;border-radius:50%;background:rgba(167,139,250,.95);box-shadow:0 0 0 4px rgba(167,139,250,.2),0 0 14px rgba(167,139,250,.9);animation:ping 2.5s ease-in-out infinite;}
+@keyframes ping{0%,100%{box-shadow:0 0 0 4px rgba(167,139,250,.2),0 0 14px rgba(167,139,250,.8);}50%{box-shadow:0 0 0 9px rgba(167,139,250,.06),0 0 28px rgba(167,139,250,.35);}}
+.pill{background:rgba(0,0,0,.55);border:1px solid rgba(167,139,250,.4);border-radius:999px;padding:7px 18px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-family:"Space Mono",monospace;color:rgba(255,255,255,.9);backdrop-filter:blur(14px);transition:all .25s;white-space:nowrap;}
+
+#overlay{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,0);pointer-events:none;transition:background .35s;}
+#overlay.open{background:rgba(0,0,0,.4);pointer-events:all;backdrop-filter:blur(4px);}
+
+.card{
+  position:fixed;right:4%;top:50%;transform:translateY(-50%) translateX(120%) scale(0.9);
+  width:90%;max-width:460px;max-height:85vh;
+  border-radius:22px;padding:2px;
+  background:linear-gradient(135deg, rgba(56,189,248,0.6), rgba(167,139,250,0.6), rgba(240,171,252,0.6), rgba(56,189,248,0.6));
+  background-size:300% 300%; animation:auroraAnim 6s ease infinite;
+  opacity:0;transition:all .5s cubic-bezier(.22,1,.36,1); display:none;z-index:60;
+}
+.card.show{opacity:1;transform:translateY(-50%) translateX(0) scale(1);}
+.card.exploding{pointer-events:none; opacity:0; transform:translateY(-50%) scale(0.8); transition:all 0.2s;}
+@keyframes auroraAnim{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+
+.card-inner{
+  background:rgba(5,8,20,0.92);border-radius:20px;padding:34px 40px;
+  backdrop-filter:blur(20px);height:100%;overflow-y:auto; position:relative;
+  scrollbar-width:thin;scrollbar-color:rgba(167,139,250,.3) transparent;
+}
+.card-inner::-webkit-scrollbar{width:4px;} .card-inner::-webkit-scrollbar-thumb{background:rgba(167,139,250,.3);border-radius:4px;}
+.close-btn{position:absolute;top:16px;right:20px;cursor:pointer;color:rgba(255,255,255,.38);font-size:18px;transition:color .2s;line-height:1;background:none;border:none;}
+.close-btn:hover{color:#fff;}
+
+.card-name{font-size:clamp(28px,4vw,42px);font-weight:700;background:linear-gradient(135deg,#fff 0%,#a78bfa 55%,#818cf8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1;margin-bottom:5px;}
+.card-role{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin-bottom:14px;}
+.card-bio{font-size:13px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:16px;}
+.card h2{font-size:20px;font-weight:700;background:linear-gradient(135deg,#fff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:16px;}
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(167,139,250,.28),transparent);margin:16px 0;}
+.info-row{display:flex;flex-wrap:wrap;gap:18px;margin-top:12px;}
+.info-item{display:flex;flex-direction:column;gap:3px;}
+.info-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(167,139,250,.6);font-family:"Space Mono",monospace;}
+.info-val{font-size:12px;color:rgba(255,255,255,.85);}
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px;}
+.tag{background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.28);color:rgba(255,255,255,.85);padding:5px 12px;border-radius:999px;font-size:10px;font-family:"Space Mono",monospace;letter-spacing:.4px;}
+.tag-group{margin-bottom:14px;}
+.tag-group-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(167,139,250,.65);font-family:"Space Mono",monospace;margin-bottom:7px;}
+.proj-item{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:14px 18px;margin-bottom:11px;transition:border-color .25s;}
+.proj-item:hover{border-color:rgba(167,139,250,.35);}
+.proj-title{font-size:14px;font-weight:600;color:#fff;margin-bottom:5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.proj-badge{font-size:9px;font-family:"Space Mono",monospace;letter-spacing:1px;text-transform:uppercase;background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.3);color:#a78bfa;padding:2px 8px;border-radius:999px;}
+.proj-desc{font-size:11.5px;color:rgba(255,255,255,.5);line-height:1.6;}
+.cbtns{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;}
+.cb{padding:10px 16px;border:1px solid rgba(255,255,255,.13);border-radius:11px;color:#fff;text-decoration:none;font-size:11px;font-family:"Space Mono",monospace;background:rgba(255,255,255,.04);transition:all .22s;letter-spacing:.4px;display:inline-flex;align-items:center;justify-content:center;}
+.cb:hover{background:rgba(167,139,250,.18);border-color:rgba(167,139,250,.5);}
+.cb.primary{background:rgba(167,139,250,.18);border-color:rgba(167,139,250,.42);}
+.cb.primary:hover{background:rgba(167,139,250,.3);}
+
+.char{display:inline-block;opacity:0;transform:translateY(-70px) scale(0.7);transition:transform .55s cubic-bezier(.22,1,.36,1), opacity .4s ease;will-change:transform,opacity;}
+.char.down{opacity:1;transform:translateY(0) scale(1);}
+#hint{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:20;color:rgba(255,255,255,.22);font-size:11px;text-transform:uppercase;letter-spacing:3px;font-family:"Space Mono",monospace;transition:opacity .8s;pointer-events:none;text-align:center;line-height:2;}
+
+#admin-btn{position:fixed;bottom:28px;right:28px;z-index:200;background:rgba(0,0,0,0.5);border:1px solid rgba(167,139,250,0.3);border-radius:999px;padding:9px 20px;font-size:12px;font-family:'Space Mono',monospace;color:rgba(255,255,255,0.7);cursor:pointer;transition:all .3s;backdrop-filter:blur(10px);}
+#admin-btn:hover{color:#fff;border-color:rgba(167,139,250,0.8);background:rgba(167,139,250,0.2);}
+
+#admin-panel{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.85);backdrop-filter:blur(20px);display:none;align-items:center;justify-content:center;}
+#admin-panel.open{display:flex;}
+.admin-box{background:rgba(5,8,20,0.95);border:1px solid rgba(167,139,250,0.4);border-radius:24px;padding:30px 40px;max-width:540px;width:92%;max-height:90vh;overflow-y:auto;}
+.admin-box::-webkit-scrollbar{width:4px;} .admin-box::-webkit-scrollbar-thumb{background:rgba(167,139,250,.3);border-radius:4px;}
+.admin-box h3{font-size:22px;font-weight:600;margin-bottom:6px;background:linear-gradient(90deg,#fff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.admin-box p{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:20px;}
+.admin-input{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 14px;color:#fff;font-size:13px;font-family:'Space Grotesk',sans-serif;margin-bottom:10px;outline:none;}
+.admin-input:focus{border-color:rgba(167,139,250,0.6);}
+textarea.admin-input{resize:vertical;min-height:70px;}
+select.admin-input{cursor:pointer;appearance:none;background:rgba(167,139,250,0.1);border-color:rgba(167,139,250,0.4);font-weight:600;}
+.admin-save{width:100%;padding:11px;border-radius:10px;border:none;background:rgba(167,139,250,0.3);border:1px solid rgba(167,139,250,0.6);color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:all .3s;margin-top:4px;}
+.admin-save:hover{background:rgba(167,139,250,0.5);}
+.admin-close{margin-top:10px;width:100%;padding:9px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.4);cursor:pointer;font-size:12px;}
+.admin-close:hover{color:#fff;border-color:rgba(255,255,255,0.3);}
+#admin-login{display:block;} #admin-form{display:none;}
+.admin-section-content{display:none;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.05);padding:15px;border-radius:12px;margin-bottom:15px;}
+.admin-section-content.active{display:block;}
+.list-item-admin{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(255,255,255,0.04);border-radius:8px;margin-bottom:6px;font-size:12px;}
+.list-actions{display:flex;gap:6px;}
+.sm-btn{border-radius:6px;padding:3px 10px;font-size:10px;cursor:pointer;border:1px solid transparent;background:transparent;}
+.sm-edit{background:rgba(56,189,248,0.15);border-color:rgba(56,189,248,0.3);color:#38bdf8;} .sm-edit:hover{background:rgba(56,189,248,0.3);}
+.sm-del{background:rgba(255,80,80,0.15);border-color:rgba(255,80,80,0.3);color:#ff8080;} .sm-del:hover{background:rgba(255,80,80,0.3);}
+
+#popup,#activity{
+  position:fixed;top:85px;left:50%;transform:translateX(-50%) translateY(-20px);
+  z-index:250;background:rgba(10,10,25,0.85);border:1px solid rgba(167,139,250,0.4);
+  border-radius:16px;padding:22px 28px;max-width:420px;width:88%;
+  backdrop-filter:blur(16px);opacity:0;pointer-events:none;
+  transition:all .4s cubic-bezier(.22,1,.36,1);text-align:center;
+}
+#popup.show,#activity.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:all;}
+.pop-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;font-family:'Space Mono',monospace;color:#a78bfa;margin-bottom:8px;}
+.pop-text{font-size:14px;color:rgba(255,255,255,0.85);line-height:1.6;}
+.pop-btn{margin-top:12px;padding:7px 18px;border-radius:999px;border:1px solid rgba(167,139,250,0.4);background:rgba(167,139,250,0.1);color:#fff;font-size:12px;cursor:pointer;}
+
+/* ═══════════════════════════════
+   MOOD SELECTOR
+═══════════════════════════════ */
+#mood-selector{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:200;
+  display:flex;gap:10px;background:rgba(0,0,0,0.5);padding:10px 18px;
+  border-radius:999px;backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.09);
+  align-items:center;
+}
+.mood-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;font-family:'Space Mono',monospace;color:rgba(255,255,255,0.35);margin-right:4px;}
+.mood-btn{padding:6px 14px;border-radius:999px;font-size:10px;font-family:'Space Mono',monospace;cursor:pointer;transition:all .3s;border:1px solid transparent;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.5);}
+.mood-btn:hover{background:rgba(255,255,255,0.12);color:#fff;}
+.mood-btn.active-mood{color:#fff;transform:scale(1.08);}
+.mood-btn.mood-recruiter.active-mood{background:rgba(56,189,248,0.2);border-color:rgba(56,189,248,0.5);box-shadow:0 0 12px rgba(56,189,248,0.3);}
+.mood-btn.mood-dev.active-mood{background:rgba(167,139,250,0.2);border-color:rgba(167,139,250,0.5);box-shadow:0 0 12px rgba(167,139,250,0.3);}
+.mood-btn.mood-friend.active-mood{background:rgba(240,171,252,0.2);border-color:rgba(240,171,252,0.5);box-shadow:0 0 12px rgba(240,171,252,0.3);}
+
+/* Mood overlay flash */
+#mood-flash{position:fixed;inset:0;z-index:180;pointer-events:none;opacity:0;transition:opacity 0.4s;}
+
+/* ═══════════════════════════════
+   SOLAR SYSTEM CARD
+═══════════════════════════════ */
+#solar-card{
+  position:fixed;left:4%;top:50%;transform:translateY(-50%) translateX(-120%) scale(0.9);
+  width:90%;max-width:520px;height:500px;
+  border-radius:22px;padding:2px;
+  background:linear-gradient(135deg,rgba(56,189,248,0.6),rgba(167,139,250,0.6),rgba(240,171,252,0.6),rgba(56,189,248,0.6));
+  background-size:300% 300%;animation:auroraAnim 6s ease infinite;
+  opacity:0;transition:all .5s cubic-bezier(.22,1,.36,1);display:none;z-index:60;
+}
+#solar-card.show{opacity:1;transform:translateY(-50%) translateX(0) scale(1);}
+#solar-inner{background:rgba(5,8,20,0.95);border-radius:20px;width:100%;height:100%;position:relative;overflow:hidden;}
+#solar-canvas{width:100%;height:100%;}
+#solar-tooltip{
+  position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,0.7);border:1px solid rgba(167,139,250,0.4);
+  border-radius:12px;padding:8px 16px;font-size:11px;font-family:'Space Mono',monospace;
+  color:#fff;pointer-events:none;opacity:0;transition:opacity 0.3s;text-align:center;white-space:nowrap;
+}
+#solar-close{position:absolute;top:14px;right:16px;cursor:pointer;color:rgba(255,255,255,.38);font-size:18px;background:none;border:none;z-index:10;}
+#solar-close:hover{color:#fff;}
+#solar-title{position:absolute;top:16px;left:24px;font-size:13px;font-family:'Space Mono',monospace;color:rgba(167,139,250,0.8);letter-spacing:1px;text-transform:uppercase;}
+
+/* ═══════════════════════════════
+   SCROLL EVENTS (JOKES / FACTS)
+═══════════════════════════════ */
+#scroll-event{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.85);
+  z-index:220;background:rgba(5,8,20,0.92);border:1px solid rgba(167,139,250,0.35);
+  border-radius:20px;padding:28px 36px;max-width:400px;width:88%;
+  backdrop-filter:blur(20px);opacity:0;pointer-events:none;
+  transition:all .45s cubic-bezier(.22,1,.36,1);text-align:center;
+}
+#scroll-event.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:all;}
+.se-type{font-size:9px;letter-spacing:3px;text-transform:uppercase;font-family:'Space Mono',monospace;color:rgba(167,139,250,0.65);margin-bottom:10px;}
+.se-emoji{font-size:36px;margin-bottom:10px;display:block;}
+.se-title{font-size:17px;font-weight:700;color:#fff;margin-bottom:8px;line-height:1.3;}
+.se-body{font-size:12px;color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:16px;}
+.se-choices{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.se-choice{padding:8px 16px;border-radius:999px;border:1px solid rgba(167,139,250,0.35);background:rgba(167,139,250,0.08);color:rgba(255,255,255,0.85);font-size:11px;font-family:'Space Mono',monospace;cursor:pointer;transition:all .25s;}
+.se-choice:hover{background:rgba(167,139,250,0.22);border-color:rgba(167,139,250,0.7);}
+.se-answer{font-size:12px;color:rgba(56,189,248,0.9);margin-top:10px;display:none;font-family:'Space Mono',monospace;}
+.se-close{margin-top:14px;padding:7px 20px;border-radius:999px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.35);font-size:11px;cursor:pointer;transition:all .25s;}
+.se-close:hover{color:#fff;border-color:rgba(255,255,255,0.4);}
+</style>
+</head>
+<body>
+
+<div id="video-wrap"><video id="vid" src="space.mp4" muted playsinline loop preload="auto"></video></div>
+<div id="vignette"></div>
+<canvas id="sc"></canvas>
+<canvas id="fx"></canvas>
+
+<div id="top-nav"></div>
+<div id="labels"></div>
+<div id="cosmic-quotes">Scroll to travel...</div>
+
+<div id="overlay" onclick="bgClose(event)">
+  <div class="card" id="card-intro"><div class="card-inner" id="content-intro"></div></div>
+  <div class="card" id="card-skills"><div class="card-inner" id="content-skills"></div></div>
+  <div class="card" id="card-proj1"><div class="card-inner" id="content-proj1"></div></div>
+  <div class="card" id="card-proj2"><div class="card-inner" id="content-proj2"></div></div>
+  <div class="card" id="card-contact"><div class="card-inner" id="content-contact"></div></div>
+  <div id="custom-cards-container"></div>
+</div>
+
+<!-- SOLAR SYSTEM CARD (separate, on left side) -->
+<div id="solar-card">
+  <div id="solar-inner">
+    <button id="solar-close" onclick="closeSolar()">✕</button>
+    <div id="solar-title">☀ Skills Universe</div>
+    <canvas id="solar-canvas"></canvas>
+    <div id="solar-tooltip"></div>
+  </div>
+</div>
+
+<!-- MOOD SELECTOR -->
+<div id="mood-selector">
+  <span class="mood-label">I am a</span>
+  <button class="mood-btn mood-recruiter active-mood" onclick="setMood('recruiter')"> Recruiter</button>
+  <button class="mood-btn mood-dev" onclick="setMood('dev')"> Developer</button>
+  <button class="mood-btn mood-friend" onclick="setMood('friend')"> Friend</button>
+</div>
+<div id="mood-flash"></div>
+
+<!-- SCROLL EVENT POPUP (Jokes / Space Questions) -->
+<div id="scroll-event">
+  <div class="se-type" id="se-type"></div>
+  <span class="se-emoji" id="se-emoji"></span>
+  <div class="se-title" id="se-title"></div>
+  <div class="se-body" id="se-body"></div>
+  <div class="se-choices" id="se-choices"></div>
+  <div class="se-answer" id="se-answer"></div>
+  <button class="se-close" onclick="closeScrollEvent()">Continue Journey →</button>
+</div>
+
+<button id="admin-btn" onclick="openAdmin()">⚙ Admin CMS</button>
+
+<div id="popup"><div class="pop-label" id="pop-label"></div><div class="pop-text" id="pop-text"></div><button class="pop-btn" onclick="closePopup()">Got it! 👍</button></div>
+
+<div id="admin-panel">
+  <div class="admin-box">
+    <div id="admin-login">
+      <h3>Admin Access</h3>
+      <p>Enter password to manage portfolio content</p>
+      <input class="admin-input" type="password" id="admin-pass" placeholder="Password..." onkeydown="if(event.key==='Enter')checkPass()"/>
+      <button class="admin-save" onclick="checkPass()">Unlock 🔐</button>
+      <button class="admin-close" onclick="closeAdmin()">Cancel</button>
+      <div id="pass-err" style="color:#ff8080;font-size:12px;margin-top:8px;text-align:center;"></div>
+    </div>
+    <div id="admin-form">
+      <h3>CMS Dashboard</h3>
+      <select id="admin-section-select" class="admin-input" onchange="switchAdminTab()">
+        <option value="intro">📝 Card 1: About Me</option>
+        <option value="skills">⚡ Card 2: Tech Stack</option>
+        <option value="projects">🚀 Card 3: Projects</option>
+        <option value="ai">🧠 Card 4: AI Projects</option>
+        <option value="contact">📡 Card 5: Contact Info</option>
+        <option value="customcards" style="background:rgba(56,189,248,0.2)">➕ Create Custom Card</option>
+      </select>
+      <div id="form-intro" class="admin-section-content active">
+        <input class="admin-input" id="in-name" placeholder="Name"/>
+        <input class="admin-input" id="in-role" placeholder="Role"/>
+        <textarea class="admin-input" id="in-bio" placeholder="Bio..."></textarea>
+        <input class="admin-input" id="in-loc" placeholder="Location"/>
+        <input class="admin-input" id="in-cgpa" placeholder="CGPA"/>
+        <button class="admin-save" onclick="saveIntro()">Save About Info 💾</button>
+      </div>
+      <div id="form-skills" class="admin-section-content">
+        <div id="admin-list-skills" style="margin-bottom:10px;"></div>
+        <input class="admin-input" id="in-skill-cat" placeholder="Category (e.g. Languages)"/>
+        <input class="admin-input" id="in-skill-tags" placeholder="Comma separated tags"/>
+        <button class="admin-save" onclick="addSkill()">Add/Update Category ✨</button>
+      </div>
+      <div id="form-projects" class="admin-section-content">
+        <div id="admin-list-projects" style="margin-bottom:10px;"></div>
+        <input class="admin-input" id="in-p1-name" placeholder="Project Name"/>
+        <input class="admin-input" id="in-p1-badge" placeholder="Badge"/>
+        <input class="admin-input" id="in-p1-emoji" placeholder="Emoji"/>
+        <textarea class="admin-input" id="in-p1-desc" placeholder="Description..."></textarea>
+        <input class="admin-input" id="in-p1-link" placeholder="Link URL"/>
+        <button class="admin-save" onclick="addProject('projects')">Add/Update Project ✨</button>
+      </div>
+      <div id="form-ai" class="admin-section-content">
+        <div id="admin-list-ai" style="margin-bottom:10px;"></div>
+        <input class="admin-input" id="in-p2-name" placeholder="AI Project Name"/>
+        <input class="admin-input" id="in-p2-badge" placeholder="Badge"/>
+        <input class="admin-input" id="in-p2-emoji" placeholder="Emoji"/>
+        <textarea class="admin-input" id="in-p2-desc" placeholder="Description..."></textarea>
+        <input class="admin-input" id="in-p2-link" placeholder="Link URL"/>
+        <button class="admin-save" onclick="addProject('ai')">Add/Update AI Project ✨</button>
+      </div>
+      <div id="form-contact" class="admin-section-content">
+        <textarea class="admin-input" id="in-c-bio" placeholder="Contact Bio..."></textarea>
+        <input class="admin-input" id="in-c-email" placeholder="Email Address"/>
+        <input class="admin-input" id="in-c-link" placeholder="LinkedIn URL"/>
+        <button class="admin-save" onclick="saveContact()">Save Contact Info 💾</button>
+      </div>
+      <div id="form-customcards" class="admin-section-content" style="border-color:rgba(56,189,248,0.4);">
+        <div id="admin-list-custom" style="margin-bottom:10px;"></div>
+        <p style="color:#38bdf8;margin-bottom:10px;">Add a completely new card to your space timeline!</p>
+        <input class="admin-input" id="in-cc-nav" placeholder="Nav Dot Name"/>
+        <input class="admin-input" id="in-cc-title" placeholder="Card Title"/>
+        <input class="admin-input" id="in-cc-sub" placeholder="Subtitle (optional)"/>
+        <textarea class="admin-input" id="in-cc-desc" placeholder="Main description content..."></textarea>
+        <button class="admin-save" style="background:rgba(56,189,248,0.3);border-color:rgba(56,189,248,0.6);" onclick="addCustomCard()">Create New Space Card 🚀</button>
+      </div>
+      <button class="admin-close" onclick="closeAdmin()">Close Dashboard</button>
+    </div>
+  </div>
+</div>
+
+<div id="hint">scroll to fly through space<br><span style="font-size:9px;opacity:.55">↕ wheel · touch</span></div>
+
+<script>
+// ═══════════════════════════════════════════
+// CMS DATA
+// ═══════════════════════════════════════════
+var ADMIN_PASS = 'SubbaAdmin@2024';
+var DEFAULT_DATA = {
+  intro:{name:"SubbaReddy Pallagiri",role:"Full-Stack Developer & AI Engineer",bio:"Aspiring developer building scalable applications and solving real-world problems with AI and full-stack engineering. B.Tech at Mohan Babu University — 9.0 CGPA, graduating 2027.",loc:"Vinukonda, AP",cgpa:"9.0 / 10"},
+  skills:[{cat:"Languages",tags:"Python, JavaScript ES2022+, Java"},{cat:"Frontend",tags:"React.js, Next.js, HTML5, Tailwind"},{cat:"AI / ML",tags:"LLMs, Prompt Engineering, NLP, RAG"}],
+  projects:[{name:"Rise — Student Ecosystem",badge:"Full-Stack",emoji:"🚀",desc:"Platform for student networking, mentorship, and internships. Built scalable APIs.",link:""}],
+  ai:[{name:"Yama AI — Legal Assistance",badge:"LLM",emoji:"⚖️",desc:"AI assistant that answers legal queries and simplifies complex legal language.",link:""}],
+  contact:{bio:"Open to internships, collaborations, and building things that matter. Reach out anytime.",email:"subbareddy123sub@gmail.com",link:"https://linkedin.com/in/SubbaReddyP"},
+  customCards:[]
+};
+var pData=JSON.parse(localStorage.getItem('sr_cms_data'));
+if(!pData) pData=JSON.parse(JSON.stringify(DEFAULT_DATA));
+if(!pData.customCards) pData.customCards=[];
+
+function saveData(){localStorage.setItem('sr_cms_data',JSON.stringify(pData));renderAllCards();renderDynamicNavAndLabels();}
+
+// ═══════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════
+var baseLabels=[
+  {id:"intro",label:"👋 About Me",time:5,pos:"left:50%;top:50%;transform:translate(-50%,-50%);"},
+  {id:"skills",label:"⚡ Tech Stack",time:50,pos:"left:28%;top:42%;"},
+  {id:"proj1",label:"🚀 Projects",time:90,pos:"left:68%;top:32%;"},
+  {id:"proj2",label:"🧠 AI Projects",time:130,pos:"left:22%;top:62%;"},
+  {id:"contact",label:"📡 Contact",time:180,pos:"left:55%;top:68%;"}
+];
+
+function renderDynamicNavAndLabels(){
+  let navHtml='',labelsHtml='';
+  baseLabels.forEach(b=>{
+    let shortName=b.id==='proj1'?'Projects':b.id==='proj2'?'AI':b.id==='intro'?'About':b.id==='skills'?'Skills':'Contact';
+    navHtml+=`<div class="nav-dot" data-label="${shortName}" onclick="jumpTo(${b.time})"></div>`;
+    labelsHtml+=`<div class="lbl" id="lbl-${b.id}" style="${b.pos}" onclick="openCard('${b.id}')"><div class="dot-ring"></div><div class="pill">${b.label}</div></div>`;
+  });
+  pData.customCards.forEach((c,i)=>{
+    let cTime=(200+(i*25))%230,rx=20+((i*37)%50),ry=30+((i*43)%40);
+    navHtml+=`<div class="nav-dot custom-dot" data-label="${c.navName}" onclick="jumpTo(${cTime})"></div>`;
+    labelsHtml+=`<div class="lbl" id="lbl-custom-${i}" style="left:${rx}%;top:${ry}%;" onclick="openCard('custom-${i}')"><div class="dot-ring" style="background:rgba(56,189,248,.95)"></div><div class="pill" style="border-color:rgba(56,189,248,.4)">${c.title}</div></div>`;
+  });
+  document.getElementById('top-nav').innerHTML=navHtml;
+  document.getElementById('labels').innerHTML=labelsHtml;
+  window.labelData=baseLabels.map(b=>({id:"lbl-"+b.id,time:b.time}));
+  pData.customCards.forEach((c,i)=>window.labelData.push({id:"lbl-custom-"+i,time:(200+(i*25))%230}));
+}
+
+function renderAllCards(){
+  document.getElementById('content-intro').innerHTML=`<button class="close-btn" onclick="closeAll()">✕</button><div class="card-name">${pData.intro.name.replace(" ","<br>")}</div><div class="card-role">${pData.intro.role}</div><p class="card-bio">${pData.intro.bio}</p><div class="divider"></div><div class="info-row"><div class="info-item"><span class="info-label">Location</span><span class="info-val">${pData.intro.loc}</span></div><div class="info-item"><span class="info-label">CGPA</span><span class="info-val">${pData.intro.cgpa}</span></div></div>`;
+  let skillsHtml='<button class="close-btn" onclick="closeAll()">✕</button><h2>Tech Stack</h2>';
+  pData.skills.forEach(s=>{let tagsHtml=s.tags.split(',').map(t=>`<span class="tag">${t.trim()}</span>`).join('');skillsHtml+=`<div class="tag-group"><div class="tag-group-label">${s.cat}</div><div class="tags">${tagsHtml}</div></div>`;});
+  skillsHtml+=`<div class="divider"></div><div class="cbtns"><button class="cb primary" onclick="closeAll();openSolar()">🪐 View Skills as Solar System</button></div>`;
+  document.getElementById('content-skills').innerHTML=skillsHtml;
+  function genProj(list,title){let html=`<button class="close-btn" onclick="closeAll()">✕</button><h2>${title}</h2>`;list.forEach(p=>{html+=`<div class="proj-item"><div class="proj-title">${p.emoji} ${p.name} ${p.badge?`<span class="proj-badge">${p.badge}</span>`:''}</div><p class="proj-desc">${p.desc}</p>${p.link?`<div class="cbtns" style="margin-top:8px;"><a class="cb primary" href="${p.link}" target="_blank">🔗 Visit Link</a></div>`:''}</div>`;});return html;}
+  document.getElementById('content-proj1').innerHTML=genProj(pData.projects,"Projects");
+  document.getElementById('content-proj2').innerHTML=genProj(pData.ai,"AI Projects");
+  document.getElementById('content-contact').innerHTML=`<button class="close-btn" onclick="closeAll()">✕</button><h2>Let's Connect</h2><p class="card-bio">${pData.contact.bio}</p><div class="cbtns"><a class="cb primary" href="mailto:${pData.contact.email}">📧 Email</a><a class="cb" href="${pData.contact.link}" target="_blank">🔗 LinkedIn</a></div>`;
+  let customContainer=document.getElementById('custom-cards-container');
+  customContainer.innerHTML='';
+  pData.customCards.forEach((c,i)=>{
+    customContainer.innerHTML+=`<div class="card" id="card-custom-${i}"><div class="card-inner"><button class="close-btn" onclick="closeAll()">✕</button><h2 style="font-size:28px;margin-bottom:5px;">${c.title}</h2>${c.sub?`<div class="card-role">${c.sub}</div>`:''}<div class="divider"></div><p class="card-bio" style="font-size:14px;white-space:pre-wrap;">${c.desc}</p></div></div>`;
+  });
+  window.allCards=document.querySelectorAll(".card");
+}
+renderDynamicNavAndLabels();
+renderAllCards();
+
+// ═══════════════════════════════════════════
+// MOOD SYSTEM
+// ═══════════════════════════════════════════
+var currentMood='recruiter';
+var MOOD_CONFIG={
+  recruiter:{
+    color:'rgba(56,189,248,0.15)',
+    flash:'rgba(56,189,248,0.08)',
+    quoteSet:["Professional meets cosmic — welcome to SubbaReddy's orbit 🎯","9.0 CGPA. 100% curiosity. Hiring? Let's connect 🚀","Results-driven developer. Built for scale. Scroll to explore.","Clean code, clear thinking, cosmic ambitions 💼","Open to internships — the universe is waiting 🌌"],
+    bioOverlay:"Looking for a driven engineer? SubbaReddy brings 9.0 CGPA, real projects, and genuine curiosity to every team.",
+    greeting:"Welcome, Recruiter — let's show you what matters most 🎯"
+  },
+  dev:{
+    color:'rgba(167,139,250,0.15)',
+    flash:'rgba(167,139,250,0.08)',
+    quoteSet:["git commit -m 'another universe shipped' 💜","console.log('still no bugs... yet') 🐛","React, Next, Python, LLMs — let's geek out 🧬","Tabs vs spaces? Neither. I use cosmic indentation 🌌","The best code is no code. The second best is SubbaReddy's code ⚡"],
+    bioOverlay:"Fellow dev! SubbaReddy builds with React, Next.js, Python and LLMs. Check out the projects — real code, real problems solved.",
+    greeting:"Ah, a developer! Let's get technical 💻"
+  },
+  friend:{
+    color:'rgba(240,171,252,0.15)',
+    flash:'rgba(240,171,252,0.06)',
+    quoteSet:["Hey! Welcome to my little corner of the universe 👋","Just a guy from AP trying to dent the universe 🌠","Coffee + Code + Curiosity = SubbaReddy 😄","Thanks for visiting! You're awesome 💫","Scroll around, explore, and don't forget to say hi! 📡"],
+    bioOverlay:"Hey friend! I'm SubbaReddy — CS student, builder, dreamer. Grab a virtual coffee and explore my space!",
+    greeting:"Hey hey! Welcome, friend! 👋🌟"
+  }
+};
+
+function setMood(mood){
+  currentMood=mood;
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('active-mood'));
+  document.querySelector('.mood-'+mood).classList.add('active-mood');
+  // Flash effect
+  var flash=document.getElementById('mood-flash');
+  flash.style.background=MOOD_CONFIG[mood].flash;
+  flash.style.opacity='1';
+  setTimeout(()=>flash.style.opacity='0',500);
+  // Update quotes
+  MOOD_QUOTES=MOOD_CONFIG[mood].quoteSet;
+  // Show greeting popup
+  document.getElementById('pop-label').textContent='🌌 Mode Changed';
+  document.getElementById('pop-text').textContent=MOOD_CONFIG[mood].greeting;
+  document.getElementById('popup').classList.add('show');
+  setTimeout(closePopup,3000);
+  // Update intro card bio overlay
+  renderMoodIntro();
+}
+function renderMoodIntro(){
+  var bioEl=document.querySelector('#content-intro .card-bio');
+  if(bioEl && currentMood!=='recruiter'){
+    bioEl.style.color='rgba(255,255,255,0.75)';
+  }
+}
+
+// ═══════════════════════════════════════════
+// SCROLL EVENT SYSTEM (Jokes + Space Questions)
+// ═══════════════════════════════════════════
+var SCROLL_EVENTS=[
+  // JOKES
+  {type:"😂 Dev Joke",emoji:"🐛",title:"Why do programmers prefer dark mode?",body:"Because light attracts bugs!",kind:"joke"},
+  {type:"😂 Dev Joke",emoji:"📦",title:"Ship fast, ship often",body:"I write code that works on my machine. Therefore, we ship my machine to the client.",kind:"joke"},
+  {type:"😂 Dev Joke",emoji:"🤖",title:"Machine Learning be like...",body:"You spend 3 months training a model. It achieves 94% accuracy. It still can't tell a dog from a muffin.",kind:"joke"},
+  {type:"😂 Dev Joke",emoji:"☕",title:"Programmer's diet",body:"A programmer's life: coffee in, code out. Repeat until the universe makes sense.",kind:"joke"},
+  {type:"😂 Dev Joke",emoji:"🔄",title:"Recursion",body:"To understand recursion, you must first understand recursion. To understand recursion, you must first understand recursion.",kind:"joke"},
+  {type:"😂 Dev Joke",emoji:"🧹",title:"Clean code",body:"Junior dev: 'I'll fix this later.' Ten years later: 'TODO: Fix this later.' — still there in production.",kind:"joke"},
+  // SPACE QUESTIONS
+  {type:"🌌 Space Quiz",emoji:"🚀",title:"How long would it take to drive to the Moon?",body:"If you drove at 100 km/h non-stop...",kind:"quiz",choices:["2 months","4 months","8 months","1 year"],answer:1,answerText:"4 months! The Moon is ~384,400 km away. At 100 km/h that's 3,844 hours — about 160 days. Pack snacks! 🌕"},
+  {type:"🌌 Space Quiz",emoji:"☀️",title:"How many Earths fit inside the Sun?",body:"The Sun is absolutely massive. Take a guess!",kind:"quiz",choices:["100","10,000","1,000,000","100,000,000"],answer:2,answerText:"About 1,300,000 Earths! The Sun's volume is so enormous, it fits over a million of our planets inside. 🌞"},
+  {type:"🌌 Space Quiz",emoji:"⭐",title:"What's the closest star to Earth (after the Sun)?",body:"It's in the Alpha Centauri system...",kind:"quiz",choices:["Betelgeuse","Proxima Centauri","Sirius","Vega"],answer:1,answerText:"Proxima Centauri! It's 4.24 light-years away. Even at the speed of light, it'd take over 4 years to reach it. 🌟"},
+  {type:"🌌 Space Quiz",emoji:"🪐",title:"Which planet has the most moons?",body:"As of 2024, one planet has over 90 confirmed moons!",kind:"quiz",choices:["Jupiter","Saturn","Uranus","Neptune"],answer:1,answerText:"Saturn! With 146 confirmed moons (and counting), Saturn is the moon champion of our solar system. 🪐"},
+  {type:"🌌 Space Quiz",emoji:"🌠",title:"What is a light-year?",body:"People often get this one wrong...",kind:"quiz",choices:["A unit of time","A unit of distance","A type of star","A galaxy measurement"],answer:1,answerText:"A unit of DISTANCE! One light-year = ~9.46 trillion kilometres. It's how far light travels in one year. 💡"},
+  // SPACE FACTS
+  {type:"🔭 Space Fact",emoji:"🌌",title:"The universe is 13.8 billion years old",body:"And yet here you are, exploring SubbaReddy's portfolio in this tiny sliver of cosmic time. That's kind of beautiful. ✨",kind:"fact"},
+  {type:"🔭 Space Fact",emoji:"🧲",title:"Neutron stars are insane",body:"A teaspoon of neutron star material weighs about 10 million tonnes. Yet SubbaReddy's code weighs almost nothing and hits harder. 😤",kind:"fact"},
+  {type:"🔭 Space Fact",emoji:"🌍",title:"You are made of stardust",body:"Every atom in your body was forged in the heart of a dying star. You are literally a child of the universe. 🌠",kind:"fact"},
+  {type:"🔭 Space Fact",emoji:"👁️",title:"The observable universe has 2 trillion galaxies",body:"Each galaxy has billions of stars. And SubbaReddy's code runs on just one pale blue dot orbiting one of them. Humble. 🌍",kind:"fact"},
+  // RIDDLES
+  {type:"🧠 Space Riddle",emoji:"🤔",title:"I have no beginning, no end, and nothing in the middle. What am I?",body:"Think cosmic...",kind:"quiz",choices:["A black hole","A donut","Space itself","Time"],answer:2,answerText:"Space itself! (Or a donut — both are technically correct in topology 🍩)"},
+  {type:"🧠 Dev Riddle",emoji:"💡",title:"I speak without a mouth and hear without ears. I have no body but come alive with wind. What am I?",body:"Developers use me every day...",kind:"quiz",choices:["The Terminal","An echo","WiFi signal","A comment"],answer:1,answerText:"An echo! Also: the terminal command `echo`. So... both! 🎉"},
+];
+
+var seShownIndices=[];
+var seLastTime=-999;
+var seCooldown=false;
+var SE_MIN_GAP=35;
+
+function maybeShowScrollEvent(currentTime){
+  if(seCooldown) return;
+  if(Math.abs(currentTime-seLastTime)<SE_MIN_GAP) return;
+  if(document.getElementById('scroll-event').classList.contains('show')) return;
+  if(document.getElementById('overlay').classList.contains('open')) return;
+  // 18% chance per check zone
+  if(Math.random()>0.18) return;
+  // Pick unseen event
+  var available=SCROLL_EVENTS.map((_,i)=>i).filter(i=>!seShownIndices.includes(i));
+  if(available.length===0){seShownIndices=[];available=SCROLL_EVENTS.map((_,i)=>i);}
+  var pick=available[Math.floor(Math.random()*available.length)];
+  seShownIndices.push(pick);
+  showScrollEvent(SCROLL_EVENTS[pick]);
+  seLastTime=currentTime;
+  seCooldown=true;
+  setTimeout(()=>seCooldown=false,SE_MIN_GAP*1000*0.5);
+}
+
+function showScrollEvent(ev){
+  document.getElementById('se-type').textContent=ev.type;
+  document.getElementById('se-emoji').textContent=ev.emoji;
+  document.getElementById('se-title').textContent=ev.title;
+  document.getElementById('se-body').textContent=ev.body;
+  document.getElementById('se-answer').style.display='none';
+  document.getElementById('se-answer').textContent='';
+  var choicesEl=document.getElementById('se-choices');
+  choicesEl.innerHTML='';
+  if(ev.kind==='quiz'&&ev.choices){
+    ev.choices.forEach((c,i)=>{
+      var btn=document.createElement('button');
+      btn.className='se-choice';
+      btn.textContent=c;
+      btn.onclick=function(){
+        document.querySelectorAll('.se-choice').forEach(b=>b.style.opacity='0.4');
+        btn.style.opacity='1';
+        btn.style.borderColor=i===ev.answer?'rgba(56,189,248,0.8)':'rgba(255,80,80,0.6)';
+        btn.style.background=i===ev.answer?'rgba(56,189,248,0.15)':'rgba(255,80,80,0.1)';
+        var ansEl=document.getElementById('se-answer');
+        ansEl.textContent=(i===ev.answer?'✅ Correct! ':'❌ Nope! ')+ev.answerText;
+        ansEl.style.display='block';
+      };
+      choicesEl.appendChild(btn);
+    });
+  }
+  document.getElementById('scroll-event').classList.add('show');
+  // Pause video while event is showing
+  vid.pause();
+}
+function closeScrollEvent(){
+  document.getElementById('scroll-event').classList.remove('show');
+  if(!vid.paused) return;
+  setTimeout(()=>{if(!document.getElementById('overlay').classList.contains('open')) vid.play();},300);
+}
+
+// ═══════════════════════════════════════════
+// SOLAR SYSTEM
+// ═══════════════════════════════════════════
+var solarCanvas=document.getElementById('solar-canvas');
+var solarCtx=solarCanvas.getContext('2d');
+var solarRAF=null;
+var solarRunning=false;
+
+var PLANET_COLORS=[
+  '#a78bfa','#38bdf8','#f0abfc','#34d399','#fbbf24','#f87171','#60a5fa','#e879f9'
+];
+
+function buildPlanets(){
+  var planets=[];
+  var allTags=[];
+  pData.skills.forEach(s=>{
+    s.tags.split(',').forEach(t=>{
+      var tag=t.trim();
+      if(tag) allTags.push({tag,cat:s.cat});
+    });
+  });
+  allTags.forEach((t,i)=>{
+    var angle=Math.random()*Math.PI*2;
+    var orbit=90+i*38+(Math.random()*18-9);
+    var size=6+Math.random()*5;
+    var speed=(0.003+Math.random()*0.004)*(Math.random()<0.5?1:-1);
+    var color=PLANET_COLORS[i%PLANET_COLORS.length];
+    planets.push({tag:t.tag,cat:t.cat,angle,orbit,size,speed,color,x:0,y:0,glowPhase:Math.random()*Math.PI*2});
+  });
+  return planets;
+}
+
+var planets=[];
+function openSolar(){
+  planets=buildPlanets();
+  document.getElementById('solar-card').style.display='block';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    document.getElementById('solar-card').classList.add('show');
+    solarCanvas.width=solarCanvas.offsetWidth;
+    solarCanvas.height=solarCanvas.offsetHeight;
+    if(!solarRunning){solarRunning=true;drawSolar();}
+  }));
+}
+function closeSolar(){
+  document.getElementById('solar-card').classList.remove('show');
+  setTimeout(()=>{document.getElementById('solar-card').style.display='none';},500);
+  solarRunning=false;
+  if(solarRAF) cancelAnimationFrame(solarRAF);
+}
+
+var hoveredPlanet=null;
+solarCanvas.addEventListener('mousemove',function(e){
+  var rect=solarCanvas.getBoundingClientRect();
+  var mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  hoveredPlanet=null;
+  planets.forEach(p=>{
+    var dx=p.x-mx,dy=p.y-my;
+    if(Math.sqrt(dx*dx+dy*dy)<p.size+6) hoveredPlanet=p;
+  });
+  var tip=document.getElementById('solar-tooltip');
+  if(hoveredPlanet){
+    tip.textContent=hoveredPlanet.tag+' · '+hoveredPlanet.cat;
+    tip.style.opacity='1';
+  } else {
+    tip.style.opacity='0';
+  }
+});
+
+function drawSolar(){
+  if(!solarRunning) return;
+  var w=solarCanvas.width,h=solarCanvas.height;
+  var cx=w/2,cy=h/2;
+  solarCtx.clearRect(0,0,w,h);
+
+  // Background stars
+  solarCtx.fillStyle='rgba(167,139,250,0.15)';
+  for(var i=0;i<60;i++){
+    var sx=((i*173+37)%w),sy=((i*97+11)%h);
+    solarCtx.beginPath();
+    solarCtx.arc(sx,sy,0.8,0,Math.PI*2);
+    solarCtx.fill();
+  }
+
+  // Draw orbit rings
+  planets.forEach(p=>{
+    solarCtx.beginPath();
+    solarCtx.arc(cx,cy,p.orbit,0,Math.PI*2);
+    solarCtx.strokeStyle='rgba(255,255,255,0.04)';
+    solarCtx.lineWidth=1;
+    solarCtx.stroke();
+    p.angle+=p.speed;
+  });
+
+  // Draw SUN (SubbaReddy's name)
+  var sunGlow=0.7+Math.sin(Date.now()*0.002)*0.3;
+  solarCtx.save();
+  solarCtx.shadowColor='rgba(255,200,80,0.8)';
+  solarCtx.shadowBlur=30*sunGlow;
+  solarCtx.beginPath();
+  solarCtx.arc(cx,cy,22,0,Math.PI*2);
+  var sunGrad=solarCtx.createRadialGradient(cx,cy,0,cx,cy,22);
+  sunGrad.addColorStop(0,'#fff7aa');
+  sunGrad.addColorStop(0.5,'#fbbf24');
+  sunGrad.addColorStop(1,'#f59e0b');
+  solarCtx.fillStyle=sunGrad;
+  solarCtx.fill();
+  solarCtx.restore();
+  solarCtx.fillStyle='rgba(5,8,20,0.9)';
+  solarCtx.font='bold 8px Space Mono, monospace';
+  solarCtx.textAlign='center';
+  solarCtx.textBaseline='middle';
+  solarCtx.fillText('SR',cx,cy);
+
+  // Draw planets
+  planets.forEach(p=>{
+    p.x=cx+Math.cos(p.angle)*p.orbit;
+    p.y=cy+Math.sin(p.angle)*p.orbit;
+    p.glowPhase+=0.03;
+    var glow=0.6+Math.sin(p.glowPhase)*0.4;
+    var isHov=hoveredPlanet===p;
+    solarCtx.save();
+    solarCtx.shadowColor=p.color;
+    solarCtx.shadowBlur=isHov?24:10*glow;
+    solarCtx.beginPath();
+    solarCtx.arc(p.x,p.y,isHov?p.size+3:p.size,0,Math.PI*2);
+    solarCtx.fillStyle=p.color;
+    solarCtx.globalAlpha=0.85+glow*0.15;
+    solarCtx.fill();
+    solarCtx.restore();
+    // Label on hover
+    if(isHov){
+      solarCtx.fillStyle='#fff';
+      solarCtx.font='bold 10px Space Grotesk, sans-serif';
+      solarCtx.textAlign='center';
+      solarCtx.fillText(p.tag,p.x,p.y-p.size-8);
+    }
+  });
+
+  solarRAF=requestAnimationFrame(drawSolar);
+}
+
+// ═══════════════════════════════════════════
+// ADMIN LOGIC
+// ═══════════════════════════════════════════
+var editIndex=-1;
+function openAdmin(){document.getElementById('admin-panel').classList.add('open');document.getElementById('admin-login').style.display='block';document.getElementById('admin-form').style.display='none';document.getElementById('admin-pass').value='';document.getElementById('pass-err').textContent='';closeAll(false);}
+function closeAdmin(){document.getElementById('admin-panel').classList.remove('open');}
+function checkPass(){if(document.getElementById('admin-pass').value===ADMIN_PASS){document.getElementById('admin-login').style.display='none';document.getElementById('admin-form').style.display='block';switchAdminTab();}else{document.getElementById('pass-err').textContent='Wrong password!';}}
+function switchAdminTab(){
+  document.querySelectorAll('.admin-section-content').forEach(el=>el.classList.remove('active'));
+  let tab=document.getElementById('admin-section-select').value;
+  document.getElementById('form-'+tab).classList.add('active');
+  editIndex=-1;
+  if(tab==='intro'){document.getElementById('in-name').value=pData.intro.name;document.getElementById('in-role').value=pData.intro.role;document.getElementById('in-bio').value=pData.intro.bio;document.getElementById('in-loc').value=pData.intro.loc;document.getElementById('in-cgpa').value=pData.intro.cgpa;}
+  else if(tab==='contact'){document.getElementById('in-c-bio').value=pData.contact.bio;document.getElementById('in-c-email').value=pData.contact.email;document.getElementById('in-c-link').value=pData.contact.link;}
+  else if(tab==='skills'){renderAdminList('skills','admin-list-skills');document.getElementById('in-skill-cat').value='';document.getElementById('in-skill-tags').value='';}
+  else if(tab==='projects'){renderAdminList('projects','admin-list-projects');clearProjForm('p1');}
+  else if(tab==='ai'){renderAdminList('ai','admin-list-ai');clearProjForm('p2');}
+  else if(tab==='customcards'){renderAdminList('customCards','admin-list-custom');document.getElementById('in-cc-nav').value='';document.getElementById('in-cc-title').value='';document.getElementById('in-cc-sub').value='';document.getElementById('in-cc-desc').value='';}
+}
+function renderAdminList(type,containerId){var list=document.getElementById(containerId);list.innerHTML='';pData[type].forEach((item,i)=>{let title=type==='skills'?item.cat:type==='customCards'?item.title:(item.emoji+' '+item.name);list.innerHTML+=`<div class="list-item-admin"><span style="max-width:65%;overflow:hidden;white-space:nowrap;">${title}</span><div class="list-actions"><button class="sm-btn sm-edit" onclick="prepEdit('${type}',${i})">Edit</button><button class="sm-btn sm-del" onclick="delItem('${type}',${i})">Del</button></div></div>`;});}
+function saveIntro(){pData.intro={name:document.getElementById('in-name').value,role:document.getElementById('in-role').value,bio:document.getElementById('in-bio').value,loc:document.getElementById('in-loc').value,cgpa:document.getElementById('in-cgpa').value};saveData();alert("Saved!");}
+function saveContact(){pData.contact={bio:document.getElementById('in-c-bio').value,email:document.getElementById('in-c-email').value,link:document.getElementById('in-c-link').value};saveData();alert("Saved!");}
+function prepEdit(type,i){editIndex=i;let item=pData[type][i];if(type==='skills'){document.getElementById('in-skill-cat').value=item.cat;document.getElementById('in-skill-tags').value=item.tags;}else if(type==='projects'){document.getElementById('in-p1-name').value=item.name;document.getElementById('in-p1-badge').value=item.badge;document.getElementById('in-p1-emoji').value=item.emoji;document.getElementById('in-p1-desc').value=item.desc;document.getElementById('in-p1-link').value=item.link;}else if(type==='ai'){document.getElementById('in-p2-name').value=item.name;document.getElementById('in-p2-badge').value=item.badge;document.getElementById('in-p2-emoji').value=item.emoji;document.getElementById('in-p2-desc').value=item.desc;document.getElementById('in-p2-link').value=item.link;}else if(type==='customCards'){document.getElementById('in-cc-nav').value=item.navName;document.getElementById('in-cc-title').value=item.title;document.getElementById('in-cc-sub').value=item.sub;document.getElementById('in-cc-desc').value=item.desc;}}
+function addSkill(){let obj={cat:document.getElementById('in-skill-cat').value,tags:document.getElementById('in-skill-tags').value};if(!obj.cat) return;if(editIndex>-1) pData.skills[editIndex]=obj;else pData.skills.push(obj);editIndex=-1;saveData();switchAdminTab();}
+function addProject(type){let pfix=type==='projects'?'p1':'p2';let obj={name:document.getElementById('in-'+pfix+'-name').value,badge:document.getElementById('in-'+pfix+'-badge').value,emoji:document.getElementById('in-'+pfix+'-emoji').value,desc:document.getElementById('in-'+pfix+'-desc').value,link:document.getElementById('in-'+pfix+'-link').value};if(!obj.name) return;if(editIndex>-1) pData[type][editIndex]=obj;else pData[type].push(obj);editIndex=-1;saveData();switchAdminTab();}
+function addCustomCard(){let obj={navName:document.getElementById('in-cc-nav').value||'New',title:document.getElementById('in-cc-title').value,sub:document.getElementById('in-cc-sub').value,desc:document.getElementById('in-cc-desc').value};if(!obj.title) return;if(editIndex>-1) pData.customCards[editIndex]=obj;else pData.customCards.push(obj);editIndex=-1;saveData();switchAdminTab();alert("Space card added!");}
+function delItem(type,i){if(confirm("Delete this?")) {pData[type].splice(i,1);saveData();switchAdminTab();}}
+function clearProjForm(pfix){['name','badge','emoji','desc','link'].forEach(f=>document.getElementById('in-'+pfix+'-'+f).value='');}
+
+// ═══════════════════════════════════════════
+// JOKES & POPUP
+// ═══════════════════════════════════════════
+var JOKES=[
+  {label:'😂 Dev Joke',text:'Why do programmers prefer dark mode? Because light attracts bugs! 🐛'},
+  {label:'👨‍💻 Dev Life',text:'I write code that works on my machine. Therefore, we ship my machine to the client. 📦'},
+  {label:'🧠 AI Fact',text:'Machine Learning is like teenagers. You teach it stuff, but it just does whatever it wants anyway. 🤖'},
+  {label:'🚀 SubbaReddy Fact',text:"SubbaReddy's code compiles faster than a spaceship hitting warp speed. 🌌"}
+];
+function showJoke(){var j=JOKES[Math.floor(Math.random()*JOKES.length)];document.getElementById('pop-label').textContent=j.label;document.getElementById('pop-text').textContent=j.text;document.getElementById('popup').classList.add('show');setTimeout(closePopup,6000);}
+function closePopup(){document.getElementById('popup').classList.remove('show');}
+
+// ═══════════════════════════════════════════
+// COSMIC QUOTES — mood-aware
+// ═══════════════════════════════════════════
+var MOOD_QUOTES=MOOD_CONFIG.recruiter.quoteSet;
+var BASE_QUOTES=["Scroll to travel the cosmos...","Go up and see the world with intensive eyes 👀","My hunger to learn expands faster than the Milky Way 🌌","Gravity holds planets, but nothing holds my curiosity 🚀","Debugging the universe... one line of code at a time 🛠️","404: Limits not found. Let's build the future."];
+var quoteEl=document.getElementById('cosmic-quotes');
+
+// ═══════════════════════════════════════════
+// VIDEO SCROLL
+// ═══════════════════════════════════════════
+var vid=document.getElementById("vid"),scrollVel=0,isScrolling=false,scrollTimer=null,hintShown=true;
+window.addEventListener("wheel",e=>{e.preventDefault();scrollVel=e.deltaY*0.014;isScrolling=true;clearTimeout(scrollTimer);scrollTimer=setTimeout(()=>isScrolling=false,90);if(hintShown){document.getElementById("hint").style.opacity="0";hintShown=false;}},{passive:false});
+var touchY=0;
+window.addEventListener("touchstart",e=>{touchY=e.touches[0].clientY;},{passive:true});
+window.addEventListener("touchmove",e=>{scrollVel=(touchY-e.touches[0].clientY)*0.05;isScrolling=true;clearTimeout(scrollTimer);scrollTimer=setTimeout(()=>isScrolling=false,90);touchY=e.touches[0].clientY;if(hintShown){document.getElementById("hint").style.opacity="0";hintShown=false;}},{passive:true});
+window.addEventListener("touchend",()=>{isScrolling=false;scrollVel=0;},{passive:true});
+
+function jumpTo(t){vid.currentTime=t;}
+
+var lastQuoteZone=-1;
+function videoLoop(){
+  if(isScrolling&&Math.abs(scrollVel)>0.01){
+    let r=Math.max(-3,Math.min(3,scrollVel));
+    if(r>=0){if(vid.paused) vid.play();vid.playbackRate=Math.max(0.1,r);}
+    else{vid.pause();vid.currentTime=Math.max(0,vid.currentTime+r*0.05);}
+  } else {
+    if(!vid.paused) vid.pause();
+  }
+  if(vid.currentTime>=233.5) vid.currentTime=0;
+
+  // Nav + Labels
+  var dots=document.querySelectorAll(".nav-dot");
+  window.labelData.forEach((d,i)=>{
+    var el=document.getElementById(d.id);
+    if(el){var near=Math.abs(vid.currentTime-d.time)<12;el.classList.toggle("visible",near);if(dots[i]) dots[i].classList.toggle("active",near);}
+  });
+
+  // Cosmic Quotes (mood-aware)
+  var allQuotes=[...BASE_QUOTES,...MOOD_QUOTES];
+  var pct=vid.currentTime/233.0;
+  var qIndex=Math.floor(pct*allQuotes.length)%allQuotes.length;
+  if(qIndex!==lastQuoteZone&&allQuotes[qIndex]){
+    lastQuoteZone=qIndex;
+    quoteEl.style.opacity=0;
+    setTimeout(()=>{quoteEl.textContent=allQuotes[qIndex];quoteEl.style.opacity=1;},400);
+  }
+
+  // Scroll events (jokes / space questions)
+  maybeShowScrollEvent(vid.currentTime);
+
+  requestAnimationFrame(videoLoop);
+}
+vid.pause();vid.currentTime=0;videoLoop();
+
+// ═══════════════════════════════════════════
+// CANVAS FX
+// ═══════════════════════════════════════════
+var sc=document.getElementById("sc"),sctx=sc.getContext("2d"),stars=[];
+function initStars(){sc.width=innerWidth;sc.height=innerHeight;stars=[];for(var i=0;i<130;i++) stars.push({x:Math.random()*sc.width,y:Math.random()*sc.height,r:Math.random()*1.2+.15,o:Math.random()*.45+.08,s:Math.random()*.007+.002,dir:Math.random()<.5?1:-1});}
+function drawStars(){sctx.clearRect(0,0,sc.width,sc.height);stars.forEach(s=>{s.o+=s.s*s.dir;if(s.o>.62||s.o<.05)s.dir*=-1;sctx.beginPath();sctx.arc(s.x,s.y,s.r,0,Math.PI*2);sctx.fillStyle="rgba(167,139,250,"+s.o.toFixed(2)+")";sctx.fill();});requestAnimationFrame(drawStars);}
+initStars();drawStars();window.addEventListener("resize",initStars);
+
+var fx=document.getElementById("fx"),fctx=fx.getContext("2d");
+function resizeFX(){fx.width=innerWidth;fx.height=innerHeight;}resizeFX();window.addEventListener("resize",resizeFX);
+var particles=[];var fxRAF=null;var fxRunning=false;
+function fxLoop(){fctx.clearRect(0,0,fx.width,fx.height);var alive=false;particles.forEach(p=>{if(p.life<=0) return;alive=true;p.x+=p.vx;p.y+=p.vy;p.vy+=p.gravity;p.vx*=0.98;p.life-=p.decay;var a=Math.max(0,p.life);fctx.save();fctx.globalAlpha=Math.min(1,a*1.5);fctx.font="bold "+p.fs+"px 'Space Grotesk',sans-serif";fctx.fillStyle="#fff";fctx.textAlign="center";fctx.textBaseline="middle";fctx.shadowColor="rgba("+p.col+",0.9)";fctx.shadowBlur=8;fctx.fillText(p.ch,p.x,p.y);fctx.restore();});particles=particles.filter(p=>p.life>0);if(alive) fxRAF=requestAnimationFrame(fxLoop);else{fctx.clearRect(0,0,fx.width,fx.height);fxRunning=false;}}
+function explodeCard(card){var chars=card.querySelectorAll(".char");chars.forEach(c=>{var r=c.getBoundingClientRect();if(r.width===0) return;var a=Math.random()*Math.PI*2,s=3+Math.random()*9,cl=["167,139,250","200,180,255","255,255,255"][Math.floor(Math.random()*3)];particles.push({x:r.left+r.width/2,y:r.top+r.height/2,vx:Math.cos(a)*s+(Math.random()-.5)*2,vy:Math.sin(a)*s+(Math.random()-.5)*2,gravity:0.18+Math.random()*0.12,size:2,life:1.0,decay:0.012+Math.random()*0.016,ch:c.textContent,fs:parseFloat(window.getComputedStyle(c).fontSize)||14,col:cl});});if(!fxRunning){fxRunning=true;if(fxRAF) cancelAnimationFrame(fxRAF);fxLoop();}}
+var wrappedCards={};
+function wrapText(el){var nodes=[];function collect(node){if(node.nodeType===3){if(node.parentNode&&node.parentNode.classList&&node.parentNode.classList.contains("char")) return;nodes.push(node);}else if(node.nodeType===1){if(node.tagName==="BUTTON"||node.tagName==="A") return;Array.from(node.childNodes).forEach(collect);}}collect(el);nodes.forEach(node=>{var f=document.createDocumentFragment();for(var i=0;i<node.nodeValue.length;i++){var ch=node.nodeValue[i];if(ch===" "||ch==="\n") f.appendChild(document.createTextNode(ch));else{var sp=document.createElement("span");sp.className="char";sp.textContent=ch;f.appendChild(sp);}}node.parentNode.replaceChild(f,node);});}
+function rainIn(card){var chars=Array.from(card.querySelectorAll(".char"));chars.forEach(c=>c.classList.remove("down"));card.offsetHeight;chars.forEach((c,i)=>setTimeout(()=>c.classList.add("down"),i*20));}
+
+var overlay=document.getElementById("overlay"),activeCard=null;
+function openCard(id){closeAll(false);var card=document.getElementById("card-"+id);if(!card) return;if(!wrappedCards[id]){wrapText(card);wrappedCards[id]=true;}overlay.classList.add("open");card.style.display="block";activeCard=card;if(Math.random()>0.7&&!document.getElementById('popup').classList.contains('show')){setTimeout(showJoke,1000);}requestAnimationFrame(()=>requestAnimationFrame(()=>{card.classList.add("show");setTimeout(()=>rainIn(card),80);}));}
+function bgClose(e){if(e.target===overlay) closeAll(true);}
+function closeAll(doExplode){if(doExplode===undefined) doExplode=true;overlay.classList.remove("open");window.allCards.forEach(c=>{if(c.classList.contains("show")&&doExplode){c.classList.add("exploding");explodeCard(c);}c.classList.remove("show");setTimeout(()=>{if(!c.classList.contains("show")){c.style.display="none";c.classList.remove("exploding");}},250);});activeCard=null;}
+document.addEventListener("keydown",e=>{if(e.key==="Escape") closeAll(true);});
+</script>
+</body>
+</html>
